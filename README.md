@@ -27,8 +27,8 @@
 
 ### Screenshots
 ![](./screenshots/index.png)
-![](./screenshots/create_ss.png)
-![](./screenshots/retrieve.png)
+![](./screenshots/create.png)
+![](./screenshots/retrive.png)
 ![](./screenshots/update.png)
 ![](./screenshots/delete.png)
 ![](./screenshots/db.png)
