@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update record</title>
+    <link rel="stylesheet" href="../style1.css">
+    <script src="http://login2explore.com/jpdb/resources/js/0.0.3/jpdb-commons.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <h1 id="header" style="font-size: 15px;">Update a record</h1>
+    <div class="container">
+        
+        <form id="studForm" method="post">
+            <div class="form-group">
+                <span><label for="studId">Roll No.:</label> <label id="studIdMsg">
+                    </label></span>
+                <input type="text" class="form-control" name="studId" id="studId" placeholder="Enter Student Roll no."
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="studName">Student Name:</label>
+                <input type="text" class="form-control" id="studName"
+                    placeholder="In case you want to change your name, enter your new name here" name="studName">
+            </div>
+            <div class="form-group">
+                <label for="studclass">Class:</label>
+                <input type="number" class="form-control" id="studclass"
+                    placeholder="In case you want to change your class, enter your new class here"
+                    name="studclass">
+            </div>
+            <div class="form-group">
+                <label for="studadd">Address:</label>
+                <input type="text" class="form-control" id="studadd"
+                    placeholder="In case you want to change your address, enter your new address here"
+                    name="studadd">
+            </div>
+            <input type="button" class="btn btn-primary" id="studSave" value="Save" onclick="updateRecord();">
+        </form>
+    </div>
+    <script>
+        function validateAndGetFormData() {
+            var studIdVar = $("#studId").val();
+            if (studIdVar === "") {
+                alert("Roll No. is a required Value");
+                $("#studId").focus();
+                return "";
+            }
+            var studNameVar = $("#studName").val();
+            var studaddVar = $("#studadd").val();
+            var studclassVar = $("#studclass").val();
+
+            if (studNameVar === "" && studclassVar === "" && studaddVar === "") {
+                alert("Enter atleast either a new name or a new class or a new address to perform an update!");
+                $("#studId").focus();
+                return "";
+            }
+            var jsonStrObj = {
+                studId: studIdVar,
+                studName: studNameVar,
+                studclass: studclassVar,
+                studbirth: studbirthVar,
+                studadd: studaddVar,
+                studenrol: studenrolVar,
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+
+        function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+            var url = dbBaseUrl + apiEndPointUrl;
+            var jsonObj;
+            $.post(url, reqString, function (result) {
+                jsonObj = JSON.parse(result);
+            }).fail(function (result) {
+                var dataJsonObj = result.responseText;
+                jsonObj = JSON.parse(dataJsonObj);
+            });
+            return jsonObj;
+        }
+        function createUPDATERecordRequest(token, jsonObj, dbName, relName, reqId) {
+            var req = "{\n"
+                + "\"token\" : \""
+                + token
+                + "\","
+                + "\"dbName\": \""
+                + dbName
+                + "\",\n" + "\"cmd\" : \"UPDATE\",\n"
+                + "\"rel\" : \""
+                + relName
+                + "\",\n"
+                + "\"jsonStr\":{ \""
+                + reqId
+                + "\":\n"
+                + jsonObj
+                + "\n"
+                + "}}";
+            return req;
+        }
+
+        function updateRecord() {
+            var jsonStr = validateAndGetFormData();
+            if (jsonStr === "") {
+                return;
+            }
+
+
+
+
+            var removeReqStr = createUPDATERecordRequest("90931320|-31949322249691415|90950533", jsonStr, "Student", "Stud-rel", parseInt(document.getElementById("studId").value));
+            alert(removeReqStr);
+            jQuery.ajaxSetup({ async: false });
+            var resultObj = executeCommand(removeReqStr,
+                "http://api.login2explore.com:5577", "/api/iml");
+            alert(JSON.stringify(resultObj));
+            jQuery.ajaxSetup({ async: true });
+            resetForm();
+        }
+
+    </script>
+
+    <button id="footer" onclick="location.href='../index.html'">Home</button>
+</body>
+
+</html>

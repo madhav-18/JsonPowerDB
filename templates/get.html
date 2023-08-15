@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retrive record</title>
+    <link rel="stylesheet" href="../style1.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    
+
+    <h1 id="header" style="font-size: 15px;">Retrieve a record</h1>
+
+    <div class="container">
+        <form id="studForm" method="post">
+            <input type="text" id="studName" name="studName"
+                placeholder="Enter the name of the Student whose record is to be fetched" class="form-control">
+            <p></p>
+            <input type="button" class="btn btn-primary" value="Fetch Record" onclick="getStudent();">
+
+        </form>
+    </div>
+
+
+    <script>
+        function validateAndGetFormData() {
+            var studNameVar = $("#studName").val();
+            if (studNameVar === "") {
+                alert("Student Name is a required value!");
+                $("#studName").focus();
+                return "";
+            }
+            var jsonStrObj = {
+                studName: studNameVar,
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+
+        function resetForm() {
+            $("#studName").val("");
+            $("#studName").focus();
+        }
+
+        function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+            var url = dbBaseUrl + apiEndPointUrl;
+            var jsonObj;
+            $.post(url, reqString, function (result) {
+                jsonObj = JSON.parse(result);
+            }).fail(function (result) {
+                var dataJsonObj = result.responseText;
+                jsonObj = JSON.parse(dataJsonObj);
+            });
+            return jsonObj;
+        }
+
+        function createGETRequest(token, dbname, relationName, jsonObjStr) {
+            var value1 = "{\n"
+                + "\"token\" : \""
+                + token
+                + "\",\n" + "\"cmd\" : \"GET\",\n"
+                + "\"dbName\": \""
+                + dbname
+                + "\",\n"
+                + "\"rel\" : \""
+                + relationName
+                + "\",\n"
+                + "\"jsonStr\":\n"
+                + jsonObjStr
+                + "\n"
+                + "}";
+            return value1;
+        }
+
+        function getStudent() {
+            var jsonStr = validateAndGetFormData();
+            if (jsonStr === "") {
+                return;
+            }
+            var getReqStr = createGETRequest("90931320|-31949322249691415|90950533",
+                "Student", "Stud-rel", jsonStr);
+            alert(getReqStr);
+            jQuery.ajaxSetup({ async: false });
+            var resultObj = executeCommand(getReqStr,
+                "http://api.login2explore.com:5577", "/api/irl");
+            alert(JSON.stringify(resultObj));
+            jQuery.ajaxSetup({ async: true });
+            resetForm();
+        }        
+    </script>
+
+    <button id="footer" onclick="location.href='../index.html'">Home</button>
+
+</body>
+
+</html>
